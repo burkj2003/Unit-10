@@ -1,0 +1,151 @@
+---
+title: "Unit-10"
+author: "Burk"
+date: "10/27/2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Unit 10
+## RMD file for GitHub
+
+```{r}
+# read in the libraries
+library(dplyr)
+library(tidyverse)
+library(reshape2)
+library(ggplot2)
+library(devtools)
+```
+
+## Question 1
+
+```{r}
+# read in the beer data from a .CSV
+cars = read.csv("~/03-School/DS 6306/Unit10/cars.csv")
+
+# Plot
+cars %>% ggplot(aes(y = MPG, x = Weight)) + geom_point()
+
+#Show lm() and estimation of toy example we have been using
+fit = lm(MPG~Weight, data = cars)
+
+# print the summary of the fit
+summary(fit)
+
+# print just the coefficients of thw fit
+fit$coefficients[1]
+fit$coefficients[2]
+
+# produce the confidence interval values of the fit
+confint(fit)
+```
+
+## Question 2
+
+```{r}
+cars %>% 
+  ggplot(aes(x = Weight, y = MPG)) + geom_point() + ggtitle("cars: mpg v. weight") + geom_smooth(method = "lm") 
+
+#degree 1 model
+fit = lm(MPG~Weight, data = cars)
+summary(fit)
+
+#degree 2 model
+cars %>% ggplot(aes(x = Weight, y = MPG)) + geom_point()
+cars3 = cars %>% mutate(wt2 = Weight^2)
+fit = lm(MPG~Weight+wt2, cars3)
+options(scipen=0)
+summary(fit)
+
+# plot the degree 2 model with red line
+preds = predict(fit)
+cars %>% ggplot(aes(x = Weight, y = MPG)) + geom_point() +geom_line(data = cars, aes(x = Weight, y = preds, col = "red"))
+
+# estimate the mpg based on a car of 2,000 lbs 
+cars2 = cars %>% filter(Weight < 5200)
+fit = lm(MPG~Weight, cars2)
+summary(fit)
+confint(fit)
+ranvehicle = data.frame(Weight = 2000)
+predict(fit, newdata = ranvehicle, interval = "confidence")
+
+```
+
+## Question 3
+
+
+```{r}
+# model the data again
+fit = lm(Horsepower ~ Weight, data = cars)
+summary(fit)
+confint(fit)
+
+# predict for the Renault 18i
+vehicle1 = data.frame(Weight = 2320)
+predict(fit, newdata = vehicle1, interval = "confidence")
+
+# predict for the AMC Concord di
+vehicle2 = data.frame(Weight = 3035)
+predict(fit, newdata = vehicle2, interval = "confidence")
+
+# assign predicted values to the cars dataframe
+cars[351,]$Horsepower = 78.7072
+cars[371,]$Horsepower = 106.7188
+
+# Fit the new model for MPG and horsepower
+fit2 = lm(MPG ~ Horsepower, data = cars)
+summary(fit2)
+confint(fit2)
+
+# plot the new model
+cars %>% 
+  ggplot(aes(x = Horsepower, y = MPG)) + geom_point() + ggtitle("cars: mpg v. horsepower") + geom_smooth(method = "lm") 
+
+#Estimate the mpg for a car that has 250 hp.  
+df = data.frame(Horsepower = 250)
+predict(fit2, newdata = df, interval = "confidence")
+
+#####  The extra "mpg" that is not part of the questions for this unit but I wanted to do anyway.
+
+#degree 2 model
+cars %>% ggplot(aes(x = Horsepower, y = MPG)) + geom_point()
+cars3 = cars %>% mutate(hp2 = Horsepower^2)
+fit = lm(MPG~Horsepower+hp2, cars3)
+options(scipen=0)
+summary(fit)
+confint(fit)
+
+# plot the degree 2 model with red line
+preds = predict(fit)
+cars %>% ggplot(aes(x = Horsepower, y = MPG)) + geom_point() +geom_line(data = cars, aes(x = Horsepower, y = preds, col = "red"))
+
+# estimate the mpg based on a car of 2,000 lbs 
+ranvehicle = data.frame(Horsepower = 250)
+hp2 = 250 * 250
+predict(fit, newdata = ranvehicle, interval = "confidence")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
