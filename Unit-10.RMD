@@ -86,6 +86,17 @@ fit = lm(Horsepower ~ Weight, data = cars)
 summary(fit)
 confint(fit)
 
+missingIdx <- which(is.na(cars$Horsepower))
+acc1 <- cars[missingIdx[1],]$Acceleration
+acc2 <- cars[missingIdx[2],]$Acceleration
+missingAcc <- c(acc1, acc2)
+
+
+plot(cars[,-c(1,2,3,8,9)])
+
+
+
+
 # predict for the Renault 18i
 vehicle1 = data.frame(Weight = 2320)
 predict(fit, newdata = vehicle1, interval = "confidence")
